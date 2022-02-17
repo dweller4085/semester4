@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <random>
+#include <stdexcept>
 
 bool createFileWithRandomNumbers (std::string const & filename, int const numbersCount, int const maxNumberValue) {
 	if (filename.empty() or numbersCount < 1 or maxNumberValue < 1) return false;
@@ -19,7 +20,7 @@ bool createFileWithRandomNumbers (std::string const & filename, int const number
 
 // taking ascending order as the correct order
 bool isFileContainsSortedArray (std::string const & filename) {
-	if (filename.empty()) return false;
+	if (filename.empty()) throw std::invalid_argument ("The filename cannot be an empty string");
 
 	std::ifstream in (filename);
 
@@ -30,6 +31,8 @@ bool isFileContainsSortedArray (std::string const & filename) {
 		if (prev > next) return false;
 		prev = next;
 	}
+
+	if (in.bad()) throw std::runtime_error ("Something went wrong while reading the file");
 
 	return true;
 }
