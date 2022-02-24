@@ -13,6 +13,8 @@ bool createFileWithRandomNumbers (std::string const & filename, int const number
 	
 	std::ofstream out (filename, std::ios_base::trunc);
 	
+	if (not out) return false;
+
 	static std::random_device rd;
 	static std::mt19937 gen (rd ());
 	std::uniform_int_distribution <int> distr (0, maxNumberValue);
