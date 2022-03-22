@@ -5,7 +5,7 @@ public:
 	using t_index = int;
 private:
 	class t_node {
-	private:
+	public:
 		t_node * m_left_child;
 		t_node * m_right_child;
 		int m_key;
@@ -13,21 +13,22 @@ private:
 	public:
 		t_node () = default;
 		t_node (t_node *, t_node *, int);
+		t_node (int);
 		~t_node () = default;
 
 		int key () const {return m_key;}
-		int descedants_cnt () const;
+		int descedants_cnt ();
 
 		t_node *& left_child () { return m_left_child; }
 		t_node *& right_child () { return m_right_child; }
 		int & key () { return m_key; }
 
+		std::vector<t_node * const> depth_first ();
+		std::vector<t_node const *> breadth_first () const;
+		t_node * find_node (t_index);
+
 	} * m_root;
-
-	t_node * find_node (t_index);
-	//std::vector<t_node *> all_left_walk () const;
-	//std::vector<t_node *> reversed_walk () const;
-
+	
 public:
 
 	void test ();

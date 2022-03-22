@@ -1,5 +1,6 @@
 #include "btree.hpp"
 #include <stack>
+#include <vector>
 #include <utility>
 
 /////////// t_binary_tree::t_node ///////////
@@ -10,12 +11,18 @@ t_binary_tree::t_node::t_node (t_node * lc, t_node * rc, int key) :
   m_key (key)
 {}
 
-int t_binary_tree::t_node::descedants_cnt () const {
-  using pair = std::pair<t_node const *, bool>;
+t_binary_tree::t_node::t_node (int const key) :
+  m_key(key),
+  m_left_child(nullptr),
+  m_right_child(nullptr)
+{}
 
-  int count = 0;
-  t_node const * cur = this;
+std::vector<t_binary_tree::t_node * const> t_binary_tree::t_node::depth_first () {
+  using pair = std::pair<t_node *, bool>;
+
+  t_node * cur = this;
   std::stack <pair> nodestack;
+  std::vector<t_node * const> vec;
 
   while (true) {
     if (cur->m_left_child != nullptr) { // 1 .
@@ -29,15 +36,18 @@ int t_binary_tree::t_node::descedants_cnt () const {
       }
       else { // 0 0 -- reached a leaf : deadend. popping until we find a fresh branch or stack is over
         while (true) {
-          if (nodestack.empty()) return count;
 
-          count++;
+          vec.push_back(cur);
+
+          if (nodestack.empty()) return vec;
+
           if (nodestack.top().second) {
             cur = nodestack.top().first->m_right_child;
             nodestack.top().second = false;
             break;
           }
 
+          cur = nodestack.top().first;
           nodestack.pop();
         }
       }
@@ -45,9 +55,19 @@ int t_binary_tree::t_node::descedants_cnt () const {
   }
 }
 
+std::vector<t_binary_tree::t_node const *> t_binary_tree::t_node::breadth_first () const {
+
+}
 
 
+int t_binary_tree::t_node::descedants_cnt () {
+  return depth_first().size() - 1;
+}
 /////////// t_binary_tree ///////////
+
+
+
+
 
 t_binary_tree::t_binary_tree () :
   m_root(nullptr)
@@ -61,6 +81,7 @@ t_binary_tree::t_binary_tree (t_binary_tree const & other) {
 }
 
 t_binary_tree::~t_binary_tree () {
+  clear();
 }
 
 
@@ -76,6 +97,8 @@ t_binary_tree t_binary_tree::copy (t_binary_tree::t_index const index) {
 
 
 void t_binary_tree::clear () {
+  for (auto & node : m_root->depth_first()) delete node;
+  m_root = nullptr;
 }
 
 void t_binary_tree::clear (t_binary_tree::t_index const index) {
@@ -84,6 +107,7 @@ void t_binary_tree::clear (t_binary_tree::t_index const index) {
 
 
 void t_binary_tree::add_node (int const key) {
+  m_root->depth_first().front()->m_left_child = new t_node {key};
 }
 
 bool t_binary_tree::remove_node_key (int const key) {
@@ -106,6 +130,7 @@ int t_binary_tree::height () {
 }
 
 int t_binary_tree::node_cnt () {
+  return m_root->descedants_cnt() + 1;
 }
 
 
@@ -119,17 +144,35 @@ int t_binary_tree::key (t_index const index) {
 
 
 int t_binary_tree::key_max () {
+  const auto vec = m_root->depth_first();
+  int max = vec.front()->key();
+  for (const auto & node : vec) {
+    if (node->key() > max) max = node->key();
+  }
+  return max;
 }
 
 int t_binary_tree::key_min () {
+  const auto vec = m_root->depth_first();
+  int min = vec.front()->key();
+  for (const auto & node : vec) {
+    if (node->key() < min) min = node->key();
+  }
+  return min;
 }
 
 int t_binary_tree::key_sum () {
+  int sum = 0;
+  for (const auto & node : m_root->depth_first()) {
+    sum += node->key();
+  }
+  return sum;
 }
 
 
 
 std::vector<int> t_binary_tree::keys () {
+  //breadthfirst
 }
 
 
