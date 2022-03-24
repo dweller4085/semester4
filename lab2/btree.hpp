@@ -23,12 +23,13 @@ private:
 		t_node *& right_child () { return m_right_child; }
 		int & key () { return m_key; }
 
-		std::vector<t_node * const> depth_first ();
-		std::vector<t_node const *> breadth_first () const;
+		std::vector<t_node *> depth_first ();
+		std::vector<t_node *> breadth_first ();
 		t_node * find_node (t_index);
 
 	} * m_root;
-	
+
+	t_node * get_node_at_index (t_index);
 public:
 
 	void test ();
