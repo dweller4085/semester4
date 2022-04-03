@@ -30,9 +30,20 @@ private:
 	} * m_root;
 
 	t_node * get_node_at_index (t_index);
+	t_node * get_node_with_key (int);
+
+	std::vector<t_node *> get_leaves ();
+
+	void remove_node (t_node *);
+
+	int height (t_node *);
+
 public:
 
 	void test ();
+
+	t_binary_tree (t_node *);
+
 	t_binary_tree ();
 	t_binary_tree (t_binary_tree const &);
 	~t_binary_tree ();
@@ -48,7 +59,7 @@ public:
 	bool remove_node_key (int);
 	bool remove_node_index (t_index);
 	
-	bool is_empty () { return (m_root == nullptr); }
+	bool is_empty () const { return (m_root == nullptr); }
 	bool is_balanced ();
 
 	int level (int);
