@@ -87,10 +87,7 @@ int t_binary_tree::t_node::descedants_cnt () {
 
 t_binary_tree::t_binary_tree () :
   m_root(nullptr)
-{
-  // test
-  m_root = new t_node {new t_node {nullptr, new t_node {new t_node {nullptr, new t_node (9), 5}, new t_node {nullptr, nullptr, 6}, 4}, 2}, new t_node {nullptr, nullptr, 3}, 1};
-}
+{}
 
 
 
@@ -129,6 +126,9 @@ t_binary_tree::t_binary_tree (t_binary_tree const & other) {
 
 
 t_binary_tree t_binary_tree::operator = (t_binary_tree const & other) {
+
+  if (&other == this) return *this;
+
   clear();
 
   if (other.is_empty()) {
@@ -243,7 +243,11 @@ void t_binary_tree::delete_children (t_binary_tree::t_index const index) {
 
 
 void t_binary_tree::add_node (int const key) {
-  m_root->depth_first().front()->m_left_child = new t_node {key};
+  if (m_root == nullptr) {
+    m_root = new t_node (key);
+  } else {
+    m_root->depth_first().front()->m_left_child = new t_node {key};
+  }
 }
 
 bool t_binary_tree::remove_node_key (int const key) {
@@ -398,6 +402,7 @@ int t_binary_tree::key (t_index const index) {
 
 
 int t_binary_tree::key_max () {
+  if (m_root == nullptr) return 0;
   const auto vec = m_root->depth_first();
   int max = vec.front()->key();
   for (const auto & node : vec) {
@@ -407,6 +412,7 @@ int t_binary_tree::key_max () {
 }
 
 int t_binary_tree::key_min () {
+  if (m_root == nullptr) return 0;
   const auto vec = m_root->depth_first();
   int min = vec.front()->key();
   for (const auto & node : vec) {
@@ -416,6 +422,7 @@ int t_binary_tree::key_min () {
 }
 
 int t_binary_tree::key_sum () {
+  if (m_root == nullptr) return 0;
   int sum = 0;
   for (const auto & node : m_root->depth_first()) {
     sum += node->key();
@@ -451,7 +458,7 @@ void t_binary_tree::print () {
 
 void t_binary_tree::print_level (int const level) {
 
-  if (level < 0 or level >= height ()) throw std::invalid_argument("asas");
+  if (level < 0 or level >= height ()) throw std::invalid_argument("Invalid level: must be in range [0; height)");
 
   if (level == 0) {
     if (is_empty()) {

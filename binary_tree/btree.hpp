@@ -25,7 +25,6 @@ private:
 
 		std::vector<t_node *> depth_first ();
 		std::vector<t_node *> breadth_first ();
-		t_node * find_node (t_index);
 
 	} * m_root;
 
