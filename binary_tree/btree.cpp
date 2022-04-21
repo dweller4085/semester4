@@ -79,9 +79,9 @@ std::vector<t_binary_tree::t_node *> t_binary_tree::t_node::breadth_first () {
 int t_binary_tree::t_node::descedants_cnt () {
   return depth_first().size() - 1;
 }
+
+
 /////////// t_binary_tree ///////////
-
-
 
 
 
@@ -89,8 +89,10 @@ t_binary_tree::t_binary_tree () :
   m_root(nullptr)
 {
   // test
-  m_root = new t_node {new t_node {nullptr, new t_node {new t_node {nullptr, nullptr, 5}, new t_node {nullptr, nullptr, 6}, 4}, 2}, new t_node {nullptr, nullptr, 3}, 1};
+  m_root = new t_node {new t_node {nullptr, new t_node {new t_node {nullptr, new t_node (9), 5}, new t_node {nullptr, nullptr, 6}, 4}, 2}, new t_node {nullptr, nullptr, 3}, 1};
 }
+
+
 
 t_binary_tree::t_binary_tree (t_binary_tree const & other) {
   if (other.is_empty()) {
@@ -102,30 +104,26 @@ t_binary_tree::t_binary_tree (t_binary_tree const & other) {
   std::map <t_node *, t_node *> map;
 
   queue.push(other.m_root);
-  map.insert(other.m_root, new t_node {other.m_root->key()});
+  map.insert(std::pair<t_node *, t_node *>{other.m_root, new t_node {other.m_root->key()}});
 
   m_root = map [other.m_root];
 
   while (not queue.empty()) {
     if (queue.front()->left_child() != nullptr) {
-      queue.push(queue.front()->left_child());
-      map.insert(queue.front()->left_child(), new t_node {queue.front()->left_child()->key()});
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->left_child(), new t_node {queue.front()->left_child()->key()}});
       map [queue.front()] -> left_child () = map [queue.front()->left_child()];
+      queue.push(queue.front()->left_child());
     }
 
     if (queue.front()->right_child() != nullptr) {
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->right_child(), new t_node {queue.front()->right_child()->key()}});
+      map [queue.front()] -> right_child () = map [queue.front()->right_child()];
       queue.push(queue.front()->right_child());
-      map.insert(queue.front()->right_child(), new t_node {queue.front()->right_child()->key()});
-      map [queue.front()] -> left_child () = map [queue.front()->left_child()];
     }
 
     queue.pop();
   }
 
-}
-
-t_binary_tree::~t_binary_tree () {
-  clear();
 }
 
 
@@ -135,38 +133,37 @@ t_binary_tree t_binary_tree::operator = (t_binary_tree const & other) {
 
   if (other.is_empty()) {
     m_root = nullptr;
-    return;
+    return * this;
   }
 
   std::queue <t_node *> queue;
   std::map <t_node *, t_node *> map;
 
   queue.push(other.m_root);
-  map.insert(other.m_root, new t_node {other.m_root->key()});
+  map.insert(std::pair<t_node *, t_node *>{other.m_root, new t_node {other.m_root->key()}});
 
   m_root = map [other.m_root];
 
   while (not queue.empty()) {
     if (queue.front()->left_child() != nullptr) {
-      queue.push(queue.front()->left_child());
-      map.insert(queue.front()->left_child(), new t_node {queue.front()->left_child()->key()});
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->left_child(), new t_node {queue.front()->left_child()->key()}});
       map [queue.front()] -> left_child () = map [queue.front()->left_child()];
+      queue.push(queue.front()->left_child());
     }
 
     if (queue.front()->right_child() != nullptr) {
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->right_child(), new t_node {queue.front()->right_child()->key()}});
+      map [queue.front()] -> right_child () = map [queue.front()->right_child()];
       queue.push(queue.front()->right_child());
-      map.insert(queue.front()->right_child(), new t_node {queue.front()->right_child()->key()});
-      map [queue.front()] -> left_child () = map [queue.front()->left_child()];
     }
 
     queue.pop();
   }
+
+
+  return * this;
 }
 
-
-t_binary_tree::t_binary_tree (t_node * const root) :
-  m_root (root)
-{}
 
 
 t_binary_tree t_binary_tree::copy (t_binary_tree::t_index const index) {
@@ -180,19 +177,19 @@ t_binary_tree t_binary_tree::copy (t_binary_tree::t_index const index) {
   }
 
   queue.push(root);
-  map.insert(root, new t_node {root->key()});
+  map.insert(std::pair <t_node *, t_node *> {root, new t_node {root->key()}});
 
   while (not queue.empty()) {
     if (queue.front()->left_child() != nullptr) {
-      queue.push(queue.front()->left_child());
-      map.insert(queue.front()->left_child(), new t_node {queue.front()->left_child()->key()});
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->left_child(), new t_node {queue.front()->left_child()->key()}});
       map [queue.front()] -> left_child () = map [queue.front()->left_child()];
+      queue.push(queue.front()->left_child());
     }
 
     if (queue.front()->right_child() != nullptr) {
+      map.insert(std::pair<t_node *, t_node *>{queue.front()->right_child(), new t_node {queue.front()->right_child()->key()}});
+      map [queue.front()] -> right_child () = map [queue.front()->right_child()];
       queue.push(queue.front()->right_child());
-      map.insert(queue.front()->right_child(), new t_node {queue.front()->right_child()->key()});
-      map [queue.front()] -> left_child () = map [queue.front()->left_child()];
     }
 
     queue.pop();
@@ -200,6 +197,15 @@ t_binary_tree t_binary_tree::copy (t_binary_tree::t_index const index) {
 
   return t_binary_tree {map [root]};
 }
+
+
+t_binary_tree::~t_binary_tree () {
+  clear();
+}
+
+t_binary_tree::t_binary_tree (t_node * const root) :
+  m_root (root)
+{}
 
 t_binary_tree::t_node * t_binary_tree::get_node_at_index (t_index index) {
   std::vector <t_node *> const vec = m_root->breadth_first();
@@ -216,16 +222,22 @@ t_binary_tree::t_node * t_binary_tree::get_node_with_key (int key) {
 }
 
 void t_binary_tree::clear () {
+  if (m_root == nullptr) return;
   for (auto & node : m_root->depth_first()) delete node;
   m_root = nullptr;
 }
 
-void t_binary_tree::clear (t_binary_tree::t_index const index) {
+void t_binary_tree::delete_children (t_binary_tree::t_index const index) {
   t_node * at_index = get_node_at_index(index);
-  for (auto & node : at_index->m_left_child->depth_first()) delete node;
-  at_index->m_left_child = nullptr;
-  for (auto & node : at_index->m_right_child->depth_first()) delete node;
-  at_index->m_right_child = nullptr;
+  if (at_index->m_left_child != nullptr) {
+    for (auto & node : at_index->m_left_child->depth_first()) delete node;
+    at_index->m_left_child = nullptr;
+  }
+
+  if (at_index->m_right_child != nullptr) {
+    for (auto & node : at_index->m_right_child->depth_first()) delete node;
+    at_index->m_right_child = nullptr;
+  }
 }
 
 
@@ -251,21 +263,25 @@ bool t_binary_tree::remove_node_index (t_binary_tree::t_index const index) {
 void t_binary_tree::remove_node (t_node * deletee) {
   const auto nodes = m_root->depth_first();
 
-  nodes.front()->left_child() = deletee->left_child();
-  nodes.front()->right_child() = deletee->right_child();
+  t_node * lc = deletee->left_child();
+  t_node * rc = deletee->right_child();
 
   for (auto & node : nodes) {
     if (node->left_child() == deletee) {
       node->left_child() = nullptr;
       delete deletee;
-      return;
+      break;
     }
     if (node->right_child() == deletee) {
       node->right_child() = nullptr;
       delete deletee;
-      return;
+      break;
     }
   }
+
+  const auto leaves = get_leaves();
+  leaves.back()->left_child() = lc;
+  leaves.back()->right_child() = rc;
 }
 
 
@@ -309,6 +325,9 @@ int t_binary_tree::height () {
 }
 
 int t_binary_tree::height (t_node * node) {
+
+  if (node == nullptr) return 0;
+
   using pair = std::pair<t_node *, bool>;
 
   t_node * cur = node;
@@ -349,7 +368,7 @@ int t_binary_tree::height (t_node * node) {
     }
   }
 
-  return max;
+  return max + 1;
 }
 
 int t_binary_tree::node_cnt () {
@@ -408,16 +427,23 @@ int t_binary_tree::key_sum () {
 
 std::vector<int> t_binary_tree::keys () {
   auto const pointervec = m_root->breadth_first();
-  std::vector<int> vec (pointervec.size());
-  for (auto const pointer : pointervec) {
-    vec.push_back(pointer->m_key);
+
+  std::vector<int> vec;
+  for (auto const pnode : pointervec) {
+    vec.push_back(pnode->m_key);
   }
+
   return vec;
 }
 
 
 
 void t_binary_tree::print () {
+  if (m_root == nullptr) {
+    std::cout << "L0: ." << "\n";
+    return;
+  }
+
   for (int i = 0; i < height(); i++) {
     print_level (i);
   }
@@ -425,14 +451,14 @@ void t_binary_tree::print () {
 
 void t_binary_tree::print_level (int const level) {
 
-  if (level < 0 or level > height ()) throw std::invalid_argument("asas");
+  if (level < 0 or level >= height ()) throw std::invalid_argument("asas");
 
   if (level == 0) {
     if (is_empty()) {
-      std::cout << "." << "\n";
+      std::cout << "L0: ." << "\n";
     }
     else {
-      std::cout << m_root->key() << "\n";
+      std::cout << "L0: " << m_root->key() << "\n";
     }
     return;
   }
@@ -476,14 +502,16 @@ void t_binary_tree::print_level (int const level) {
 
     queue.pop();
   }
+
+   std::cout << "L" + std::to_string(level) + ": " << out << "\n";
 }
 
 void t_binary_tree::print_leaves () {
   const auto leaves = get_leaves();
-  std::cout << "The leaves:" << "\n";
   for (const auto & leaf : leaves) {
-    std::cout << leaf->key() << "\n";
+    std::cout << leaf->key() << " ";
   }
+  std::cout << "\n";
 }
 
 

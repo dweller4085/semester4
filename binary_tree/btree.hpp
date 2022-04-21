@@ -38,11 +38,9 @@ private:
 
 	int height (t_node *);
 
-public:
-
-	void test ();
-
 	t_binary_tree (t_node *);
+
+public:
 
 	t_binary_tree ();
 	t_binary_tree (t_binary_tree const &);
@@ -53,7 +51,7 @@ public:
 	t_binary_tree copy (t_index);
 
 	void clear ();
-	void clear (t_index);
+	void delete_children (t_index);
 	
 	void add_node (int);
 	bool remove_node_key (int);
