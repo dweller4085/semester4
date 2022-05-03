@@ -1,5 +1,7 @@
 #include "binary_tree.hpp"
 
+#include <stdexcept>
+
 t_binary_tree::t_node::t_node () :
   left (nullptr), right (nullptr), key (0)
 {}
@@ -79,32 +81,60 @@ int t_binary_tree::height () const {
   return height (m_root);
 }
 int t_binary_tree::node_count () const {
-  int count = 0;
-
-  node_count_rec (m_root, count);
-
-  return count;
+  return breadth_first(m_root).size();
 }
 
 int t_binary_tree::index_of (int const key) const {
+  if (m_root == nullptr) return -1;
 
+  auto const bf = breadth_first (m_root);
+
+  for (int i = 0; i < bf.size(); i++) if (bf[i]->key == key) return i;
+
+  return -1;
 }
 int t_binary_tree::key_of (int const index) const {
   return at_index (index) -> key;
 }
 
 int t_binary_tree::key_max () const {
+  if (m_root == nullptr) return -1;
 
+  auto const bf = breadth_first (m_root);
+  int max = m_root->key;
+
+  for (auto const & pnode : bf) if (pnode->key > max) max = pnode->key;
+
+  return max;
 }
 int t_binary_tree::key_min () const {
+  if (m_root == nullptr) return -1;
 
+  auto const bf = breadth_first (m_root);
+  int min = m_root->key;
+
+  for (auto const & pnode : bf) if (pnode->key < min) min = pnode->key;
+
+  return min;
 }
 int t_binary_tree::key_sum () const {
 
+  if (m_root == nullptr) return -1;
+
+  auto const bf = breadth_first (m_root);
+  int sum = 0;
+  for (auto const & pnode : bf) sum += pnode -> key;
+
+  return sum;
 }
 
 std::vector<int> t_binary_tree::keys () const {
+  auto const bf = breadth_first (m_root);
+  std::vector <int> keys (bf.size());
 
+  for (std::size_t i = 0; i < bf.size(); i++) keys [i] = bf [i] -> key;
+
+  return keys;
 }
 
 void t_binary_tree::print () const {
@@ -155,12 +185,35 @@ int t_binary_tree::height (t_node * const root) const {
   return max_depth;
 }
 
-void t_binary_tree::node_count_rec (t_node * root, int & count) const {
-  if (root->left != nullptr) node_count_rec (root->left, count);
-	if (root->right != nullptr) node_count_rec (root->right, count);
-
-  count++;
+void t_binary_tree::height_rec (t_node * const root, int & max_depth, int & curr_depth) const {
+  if (root->left != nullptr) height_rec (root->left, max_depth, ++curr_depth);
+  if (root->right != nullptr) height_rec (root->right, max_depth, ++curr_depth);
+  
+  if (curr_depth > max_depth) max_depth = curr_depth;
+  
+  curr_depth--;
 }
 
 t_binary_tree::t_binary_tree (t_node * root) : m_root (root) {}
 
+std::vector <t_binary_tree::t_node *> t_binary_tree::breadth_first (t_node * const root) const {
+  std::vector <t_node *> vec;
+
+  if (root == nullptr) return vec;
+
+  vec.push_back (root);
+
+  for (std::size_t i = 0; i < vec.size(); i++) {
+    if (vec[i]->left  != nullptr) vec.push_back(vec[i]->left );
+    if (vec[i]->right != nullptr) vec.push_back(vec[i]->right);
+  }
+
+  return vec;
+}
+
+t_binary_tree::t_node * t_binary_tree::at_index (int const index) const {
+  auto bf = breadth_first (m_root);
+  if (index < 0 or index > bf.size()) throw std::out_of_range ("index must be in [0, node_count)");
+
+  return bf [index];
+}

@@ -23,7 +23,6 @@ protected:
 	void copy_rec (t_node *, t_node *);
 	int height (t_node *) const;
 	void height_rec (t_node *, int &, int &) const;
-	void node_count_rec (t_node *, int &) const;
 
 	t_node * at_index (int) const;
 	t_node * with_key (int) const;
@@ -31,6 +30,8 @@ protected:
 	bool remove_node (t_node *);
 
 	t_binary_tree (t_node *);
+
+	std::vector <t_node *> breadth_first (t_node *) const;
 
 public:
 
