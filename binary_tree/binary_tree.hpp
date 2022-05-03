@@ -1,41 +1,34 @@
 #include <vector>
 
 class t_binary_tree {
-public:
-	using t_index = int;
-private:
+protected:
 	class t_node {
 	public:
-		t_node * m_left_child;
-		t_node * m_right_child;
-		int m_key;
-	
-	public:
-		t_node () = default;
+		t_node * left;
+		t_node * right;
+		int key;
+
+		t_node ();
 		t_node (t_node *, t_node *, int);
 		t_node (int);
 		~t_node () = default;
 
-		int key () const {return m_key;}
-		int descedants_cnt ();
-
-		t_node *& left_child () { return m_left_child; }
-		t_node *& right_child () { return m_right_child; }
-		int & key () { return m_key; }
-
-		std::vector<t_node *> depth_first ();
-		std::vector<t_node *> breadth_first ();
+		int children_count () const;
 
 	} * m_root;
 
-	t_node * get_node_at_index (t_index);
-	t_node * get_node_with_key (int);
+	void clear (t_node * &);
+	void clear_rec (t_node *);
+	void copy (t_binary_tree const &);
+	void copy_rec (t_node *, t_node *);
+	int height (t_node *) const;
+	void height_rec (t_node *, int &, int &) const;
+	void node_count_rec (t_node *, int &) const;
 
-	std::vector<t_node *> get_leaves ();
+	t_node * at_index (int) const;
+	t_node * with_key (int) const;
 
-	void remove_node (t_node *);
-
-	int height (t_node *);
+	bool remove_node (t_node *);
 
 	t_binary_tree (t_node *);
 
@@ -45,35 +38,37 @@ public:
 	t_binary_tree (t_binary_tree const &);
 	~t_binary_tree ();
 	
-	t_binary_tree operator = (t_binary_tree const &);
+	t_binary_tree & operator = (t_binary_tree const &);
 
-	t_binary_tree copy (t_index);
+	t_binary_tree get_copy (int) const;
 
 	void clear ();
-	void delete_children (t_index);
+	void clear_subtrees (int);
 	
 	void add_node (int);
 	bool remove_node_key (int);
-	bool remove_node_index (t_index);
+	bool remove_node_index (int);
 	
-	bool is_empty () const { return (m_root == nullptr); }
-	bool is_balanced ();
+	bool is_empty () const;
+	bool is_balanced () const;
 
-	int level (int);
-	int height ();
-	int node_cnt ();
+	int level (int) const;
+	int height () const;
+	int node_count () const;
 	
-	t_index index (int);
-	int key (t_index);
+	int index_of (int) const;
+	int key_of (int) const;
 
-	int key_max ();
-	int key_min ();
-	int key_sum ();
+	int key_max () const;
+	int key_min () const;
+	int key_sum () const;
 
-	std::vector<int> keys ();
+	std::vector<int> keys () const;
 	
-	void print ();
-	void print_level (int);
-	void print_leaves ();
-	
+	void print () const;
+	void print_level (int) const;
+	void print_leaves () const;
+
+	t_binary_tree subtree (int);
+	t_binary_tree operator [] (int);
 };
