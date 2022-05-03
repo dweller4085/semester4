@@ -100,20 +100,18 @@ int t_binary_tree::key_of (int const index) const {
 int t_binary_tree::key_max () const {
   if (m_root == nullptr) return -1;
 
-  auto const bf = breadth_first (m_root);
   int max = m_root->key;
 
-  for (auto const & pnode : bf) if (pnode->key > max) max = pnode->key;
+  for (auto const & node : breadth_first (m_root)) if (node->key > max) max = node->key;
 
   return max;
 }
 int t_binary_tree::key_min () const {
   if (m_root == nullptr) return -1;
 
-  auto const bf = breadth_first (m_root);
   int min = m_root->key;
 
-  for (auto const & pnode : bf) if (pnode->key < min) min = pnode->key;
+  for (auto const & node : breadth_first (m_root)) if (node->key < min) min = node->key;
 
   return min;
 }
@@ -121,9 +119,8 @@ int t_binary_tree::key_sum () const {
 
   if (m_root == nullptr) return -1;
 
-  auto const bf = breadth_first (m_root);
   int sum = 0;
-  for (auto const & pnode : bf) sum += pnode -> key;
+  for (auto const & node : breadth_first (m_root)) sum += node -> key;
 
   return sum;
 }
