@@ -18,9 +18,11 @@ protected:
 	} * m_root;
 
 	void clear (t_node * &);
-	void clear_rec (t_node *);
+	void clear_rec (t_node * &);
+
 	void copy (t_binary_tree const &);
 	void copy_rec (t_node *, t_node *);
+
 	int height (t_node *) const;
 	void height_rec (t_node *, int &, int &) const;
 
@@ -40,13 +42,13 @@ public:
 	~t_binary_tree ();
 	
 	t_binary_tree & operator = (t_binary_tree const &);
-
+	
 	t_binary_tree get_copy (int) const;
 
-	void clear ();
-	void clear_subtrees (int);
+	t_binary_tree & clear ();
+	t_binary_tree & clear_subtrees (int);
 	
-	void add_node (int);
+	t_binary_tree & add_node (int);
 	bool remove_node_key (int);
 	bool remove_node_index (int);
 	
@@ -70,6 +72,6 @@ public:
 	void print_level (int) const;
 	void print_leaves () const;
 
-	t_binary_tree subtree (int);
-	t_binary_tree operator [] (int);
+	//t_binary_tree & subtree (int) const;
+	//t_binary_tree & operator [] (int) const;
 };

@@ -1,6 +1,7 @@
 #include "binary_tree.hpp"
 
 #include <stdexcept>
+#include <iostream>
 
 t_binary_tree::t_node::t_node () :
   left (nullptr), right (nullptr), key (0)
@@ -42,16 +43,20 @@ t_binary_tree t_binary_tree::get_copy (int const index) const {
   return t_binary_tree (t_binary_tree (at_index (index)));
 }
 
-void t_binary_tree::clear () {
+t_binary_tree & t_binary_tree::clear () {
   clear (m_root);
+
+  return *this;
 }
-void t_binary_tree::clear_subtrees (int const index) {
+t_binary_tree & t_binary_tree::clear_subtrees (int const index) {
 	t_node * const node = at_index (index);
-	if (node->left != nullptr) clear (node->left);
+	if (node->left  != nullptr) clear (node->left );
 	if (node->right != nullptr) clear (node->right);
+
+  return *this;
 }
 
-void t_binary_tree::add_node (int const key) {
+t_binary_tree & t_binary_tree::add_node (int const key) {
   if (m_root == nullptr) {
     m_root = new t_node {key};
   }
@@ -60,6 +65,8 @@ void t_binary_tree::add_node (int const key) {
     while (leftist -> left != nullptr) leftist = leftist -> left;
     leftist -> left = new t_node {key};
   }
+
+  return *this;
 }
 bool t_binary_tree::remove_node_key (int const key) {
   return remove_node (with_key (key));
@@ -71,11 +78,33 @@ bool t_binary_tree::is_empty () const {
   return (m_root == nullptr);
 }
 bool t_binary_tree::is_balanced () const {
+  for (auto const & node : breadth_first (m_root)) {
+    if (std::abs (height (node->left) - height (node->right)) > 1) return false;
+  }
 
+  return true;
 }
 
-int t_binary_tree::level (int) const {
+int t_binary_tree::level (int const key) const {
+	
+	std::vector <t_node *> vec;
 
+	vec.push_back (m_root);
+
+	std::size_t j = -1;
+
+	for (std::size_t i = 0; i < vec.size(); i++) {
+    if (i == (std::size_t(1) << (j + 1)) - std::size_t(1)) j++;
+
+    if (vec[i] != nullptr) {
+      if (vec[i]->key == key) return j;
+
+      vec.push_back(vec[i]->left );
+		  vec.push_back(vec[i]->right);
+    }
+	}
+	
+	return -1;
 }
 int t_binary_tree::height () const {
   return height (m_root);
@@ -135,28 +164,34 @@ std::vector<int> t_binary_tree::keys () const {
 }
 
 void t_binary_tree::print () const {
-
+  for (int i = 0; i < height () + 1; i++) print_level (i);
 }
-void t_binary_tree::print_level (int) const {
+void t_binary_tree::print_level (int const level) const {
 
 }
 void t_binary_tree::print_leaves () const {
+  
+  for (auto const & node : breadth_first (m_root)) {
+    if (node -> left == nullptr and node -> right == nullptr) {
+      std::cout << node -> key << " ";
+    }
+  }
 
+  std::cout << "\n";
 }
 
 void t_binary_tree::clear (t_node * & root) {
   if (root == nullptr) return;
 
   clear_rec (root);
-
-  root = nullptr;
 }
 
-void t_binary_tree::clear_rec (t_node * const root) {
-	if (root->left != nullptr) clear_rec (root->left);
+void t_binary_tree::clear_rec (t_node * & root) {
+	if (root->left  != nullptr) clear_rec (root->left );
 	if (root->right != nullptr) clear_rec (root->right);
 	
   delete root;
+  root = nullptr;
 }
 
 void t_binary_tree::copy (t_binary_tree const & other) {
@@ -167,7 +202,7 @@ void t_binary_tree::copy (t_binary_tree const & other) {
 }
 
 void t_binary_tree::copy_rec (t_node * const root, t_node * const other) {
-	if (other->left != nullptr) copy_rec (root->left = new t_node (other->left->key), other->left);
+	if (other->left  != nullptr) copy_rec (root->left  = new t_node (other->left ->key), other->left );
 	if (other->right != nullptr) copy_rec (root->right = new t_node (other->right->key), other->right);
 }
 
@@ -210,7 +245,27 @@ std::vector <t_binary_tree::t_node *> t_binary_tree::breadth_first (t_node * con
 
 t_binary_tree::t_node * t_binary_tree::at_index (int const index) const {
   auto bf = breadth_first (m_root);
-  if (index < 0 or index > bf.size()) throw std::out_of_range ("index must be in [0, node_count)");
+  if (index < 0 or index > bf.size()) throw std::out_of_range ("at_index (int): Index must be in range [0, node_count)!");
 
   return bf [index];
 }
+
+t_binary_tree::t_node * t_binary_tree::with_key (int const key) const {
+  for (auto const & node : breadth_first (m_root)) if (node->key == key) return node;
+  
+  return nullptr;
+}
+
+bool t_binary_tree::remove_node (t_node * const node) {
+  return true;
+}
+
+/*
+t_binary_tree & t_binary_tree::subtree (int const index) const {
+  return t_binary_tree { at_index (index) };
+}
+
+t_binary_tree & t_binary_tree::operator [] (int const index) const {
+  return subtree (index);
+}
+*/
