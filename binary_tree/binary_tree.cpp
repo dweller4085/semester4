@@ -86,26 +86,24 @@ bool t_binary_tree::is_balanced () const {
 }
 
 int t_binary_tree::level (int const key) const {
-	
-	std::vector <t_node *> vec;
+  if (m_root == nullptr) return -1;
 
-	vec.push_back (m_root);
+  int level = -1;
+  int curlvl = 0;
 
-	std::size_t j = -1;
+  level_rec (m_root, curlvl, level, key);
 
-	for (std::size_t i = 0; i < vec.size(); i++) {
-    if (i == (std::size_t(1) << (j + 1)) - std::size_t(1)) j++;
-
-    if (vec[i] != nullptr) {
-      if (vec[i]->key == key) return j;
-
-      vec.push_back(vec[i]->left );
-		  vec.push_back(vec[i]->right);
-    }
-	}
-	
-	return -1;
+  return level;
 }
+void t_binary_tree::level_rec (t_node * root, int & curlvl, int & level, int const key) const {
+  if (root->key == key) { level = curlvl; return; }
+
+	if (root->left  != nullptr) level_rec (root->left, ++curlvl, level, key);
+	if (root->right != nullptr) level_rec (root->right, ++curlvl, level, key);
+
+  --curlvl;
+}
+
 int t_binary_tree::height () const {
   return height (m_root);
 }
@@ -164,10 +162,45 @@ std::vector<int> t_binary_tree::keys () const {
 }
 
 void t_binary_tree::print () const {
-  for (int i = 0; i < height () + 1; i++) print_level (i);
+  for (int i = 0; i <= height (); i++) print_level (i);
 }
 void t_binary_tree::print_level (int const level) const {
+  if (level < 0 or level > height ()) throw std::invalid_argument ("print_level (int): Level must be in range [0, height]!");
 
+  if (m_root == nullptr) {
+    std::cout << "L0: ." << "\n";
+    return;
+  }
+
+  struct t_nodelvl { t_node * root; int level; };
+  
+  std::vector <t_nodelvl> vec;
+
+  vec.push_back ({m_root, 0});
+
+  for (std::size_t i = 0; vec[i].level <= level; i++) {
+    if (vec[i].root == nullptr) { 
+      vec.push_back ({nullptr, vec[i].level + 1});
+      vec.push_back ({nullptr, vec[i].level + 1});
+    } else {
+      vec.push_back({vec[i].root->left, vec[i].level + 1});
+      vec.push_back({vec[i].root->right, vec[i].level + 1});
+    }
+  }
+
+  std::cout << "L" << level << ": ";
+
+  for (auto const & node : vec) {
+    if (node.level == level) {
+      if (node.root == nullptr) {
+        std::cout << ". ";
+      } else {
+        std::cout << node.root->key << " ";
+      }
+    }
+  }
+
+  std::cout << "\n";
 }
 void t_binary_tree::print_leaves () const {
   
@@ -257,7 +290,37 @@ t_binary_tree::t_node * t_binary_tree::with_key (int const key) const {
 }
 
 bool t_binary_tree::remove_node (t_node * const node) {
-  return true;
+  if (m_root == nullptr or node == nullptr) return false;
+
+  if (m_root->children_count() == 0) {
+    clear (m_root);
+    return true;
+  }
+
+  for (auto const & pnode : breadth_first (m_root)) {
+    if (pnode->left == node) {
+      pnode->left = node->left;
+      
+      t_node * rightist = m_root;
+      while (rightist->right != nullptr) rightist = rightist -> right;
+      rightist->right = node->right;
+
+      delete node;
+      return true;
+    }
+    else if (pnode->right == node) {
+      pnode->right = node->right;
+      
+      t_node * leftist = m_root;
+      while (leftist->left != nullptr) leftist = leftist -> left;
+      leftist->left = node->left;
+
+      delete node;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /*
