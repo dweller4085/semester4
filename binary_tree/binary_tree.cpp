@@ -292,10 +292,29 @@ t_binary_tree::t_node * t_binary_tree::with_key (int const key) const {
 bool t_binary_tree::remove_node (t_node * const node) {
   if (m_root == nullptr or node == nullptr) return false;
 
-  if (m_root->children_count() == 0) {
+  if (m_root == node and m_root->children_count() == 0) {
     clear (m_root);
     return true;
   }
+
+  if (m_root == node and m_root->children_count() != 0) {
+    if (m_root->left != nullptr) {
+      m_root = m_root->left;
+      t_node * rightist = m_root;
+      while (rightist->right != nullptr) rightist = rightist -> right;
+      rightist->right = node->right;
+      delete node;
+      return true;
+    } else {
+      m_root = m_root->right;
+      t_node * leftist = m_root;
+      while (leftist->left != nullptr) leftist = leftist -> left;
+      leftist->left = node->left;
+      delete node;
+      return true;
+    }
+  }
+
 
   for (auto const & pnode : breadth_first (m_root)) {
     if (pnode->left == node) {
