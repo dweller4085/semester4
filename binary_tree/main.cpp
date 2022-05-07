@@ -105,6 +105,14 @@ void test2 () {
   a.print();
   std::cout << "\n\n";
 
+  std::cout << "height() : " << a.height() << "\n";
+  std::cout << "level(62) : " << a.level(62) << "\n";
+  std::cout << "is_balanced() : " << a.is_balanced() << "\n";
+  std::cout << "clear_subtrees(2) \n";
+  a.clear_subtrees(2).print();
+
+  std::cout << "\n\n";
+
   for (int i = 0; i < 63; i++) {
     a.remove_node_key(i);
   }
@@ -114,5 +122,5 @@ void test2 () {
 }
 
 int main () {
-  
+  test2();
 }
