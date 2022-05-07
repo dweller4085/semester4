@@ -23,7 +23,7 @@ t_binary_tree::t_binary_tree () :
   m_root (nullptr)
 {}
 t_binary_tree::t_binary_tree (t_binary_tree const & other) {
-  copy (other);
+  copy (other.m_root);
 }
 t_binary_tree::~t_binary_tree () {
   clear();
@@ -34,13 +34,15 @@ t_binary_tree & t_binary_tree::operator = (t_binary_tree const & other) {
 
   clear();
 
-  copy (other);
+  copy (other.m_root);
 
   return *this;
 }
 
 t_binary_tree t_binary_tree::get_copy (int const index) const {
-  return t_binary_tree (t_binary_tree (at_index (index)));
+  t_binary_tree tree;
+  tree.copy (at_index (index));
+  return tree;
 }
 
 t_binary_tree & t_binary_tree::clear () {
@@ -59,11 +61,24 @@ t_binary_tree & t_binary_tree::clear_subtrees (int const index) {
 t_binary_tree & t_binary_tree::add_node (int const key) {
   if (m_root == nullptr) {
     m_root = new t_node {key};
+    return *this;
   }
   else {
+    /*
     t_node * leftist = m_root;
     while (leftist -> left != nullptr) leftist = leftist -> left;
     leftist -> left = new t_node {key};
+    */
+
+    for (auto const & node : breadth_first (m_root)) {
+      if (node->left == nullptr) {
+        node->left = new t_node {key};
+        return *this;
+      } else if (node->right == nullptr) {
+        node->right = new t_node {key};
+        return *this;
+      }
+    }
   }
 
   return *this;
@@ -162,15 +177,16 @@ std::vector<int> t_binary_tree::keys () const {
 }
 
 void t_binary_tree::print () const {
-  for (int i = 0; i <= height (); i++) print_level (i);
-}
-void t_binary_tree::print_level (int const level) const {
-  if (level < 0 or level > height ()) throw std::invalid_argument ("print_level (int): Level must be in range [0, height]!");
 
   if (m_root == nullptr) {
     std::cout << "L0: ." << "\n";
     return;
   }
+
+  for (int i = 0; i <= height (); i++) print_level (i);
+}
+void t_binary_tree::print_level (int const level) const {
+  if (level < 0 or level > height ()) throw std::invalid_argument ("print_level (int): Level must be in range [0, height]!");
 
   struct t_nodelvl { t_node * root; int level; };
   
@@ -227,11 +243,11 @@ void t_binary_tree::clear_rec (t_node * & root) {
   root = nullptr;
 }
 
-void t_binary_tree::copy (t_binary_tree const & other) {
-	if (other.is_empty())
+void t_binary_tree::copy (t_node * const root) {
+	if (root == nullptr)
 		m_root = nullptr;
 	else
-		copy_rec (m_root = new t_node {other.m_root->key}, other.m_root);
+		copy_rec (m_root = new t_node {root->key}, root);
 }
 
 void t_binary_tree::copy_rec (t_node * const root, t_node * const other) {
@@ -240,7 +256,7 @@ void t_binary_tree::copy_rec (t_node * const root, t_node * const other) {
 }
 
 int t_binary_tree::height (t_node * const root) const {
-  if (root == nullptr) return 0;
+  if (root == nullptr) return -1;
 
   int max_depth = 0;
   int curr_depth = 0;
@@ -259,8 +275,6 @@ void t_binary_tree::height_rec (t_node * const root, int & max_depth, int & curr
   curr_depth--;
 }
 
-t_binary_tree::t_binary_tree (t_node * root) : m_root (root) {}
-
 std::vector <t_binary_tree::t_node *> t_binary_tree::breadth_first (t_node * const root) const {
   std::vector <t_node *> vec;
 
@@ -278,7 +292,7 @@ std::vector <t_binary_tree::t_node *> t_binary_tree::breadth_first (t_node * con
 
 t_binary_tree::t_node * t_binary_tree::at_index (int const index) const {
   auto bf = breadth_first (m_root);
-  if (index < 0 or index > bf.size()) throw std::out_of_range ("at_index (int): Index must be in range [0, node_count)!");
+  if (index < 0 or index >= bf.size()) throw std::out_of_range ("at_index (int): Index must be in range [0, node_count)!");
 
   return bf [index];
 }
@@ -341,13 +355,3 @@ bool t_binary_tree::remove_node (t_node * const node) {
 
   return false;
 }
-
-/*
-t_binary_tree & t_binary_tree::subtree (int const index) const {
-  return t_binary_tree { at_index (index) };
-}
-
-t_binary_tree & t_binary_tree::operator [] (int const index) const {
-  return subtree (index);
-}
-*/

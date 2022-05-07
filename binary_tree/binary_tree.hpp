@@ -20,7 +20,7 @@ protected:
 	void clear (t_node * &);
 	void clear_rec (t_node * &);
 
-	void copy (t_binary_tree const &);
+	void copy (t_node *);
 	void copy_rec (t_node *, t_node *);
 
 	int height (t_node *) const;
@@ -33,11 +33,23 @@ protected:
 
 	bool remove_node (t_node *);
 
-	t_binary_tree (t_node *);
-
 	std::vector <t_node *> breadth_first (t_node *) const;
 
 public:
+
+	void test_a () {
+		/*
+		0
+		4 99
+		41 42 98 97
+		5 . 6 . . . . .
+		*/
+		m_root = new t_node (0);
+		m_root -> left = new t_node (new t_node {41}, new t_node {42}, 4);
+		m_root -> right = new t_node {new t_node {98}, new t_node {97}, 99};
+		m_root -> left -> left -> left = new t_node {5};
+		m_root -> left -> right -> left = new t_node {6};
+	}
 
 	t_binary_tree ();
 	t_binary_tree (t_binary_tree const &);
@@ -73,7 +85,4 @@ public:
 	void print () const;
 	void print_level (int) const;
 	void print_leaves () const;
-
-	//t_binary_tree & subtree (int) const;
-	//t_binary_tree & operator [] (int) const;
 };
