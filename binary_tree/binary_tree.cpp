@@ -64,12 +64,6 @@ t_binary_tree & t_binary_tree::add_node (int const key) {
     return *this;
   }
   else {
-    /*
-    t_node * leftist = m_root;
-    while (leftist -> left != nullptr) leftist = leftist -> left;
-    leftist -> left = new t_node {key};
-    */
-
     for (auto const & node : breadth_first (m_root)) {
       if (node->left == nullptr) {
         node->left = new t_node {key};
@@ -126,7 +120,7 @@ int t_binary_tree::node_count () const {
   return breadth_first(m_root).size();
 }
 
-int t_binary_tree::index_of (int const key) const {
+int t_binary_tree::index (int const key) const {
   if (m_root == nullptr) return -1;
 
   auto const bf = breadth_first (m_root);
@@ -135,7 +129,7 @@ int t_binary_tree::index_of (int const key) const {
 
   return -1;
 }
-int t_binary_tree::key_of (int const index) const {
+int t_binary_tree::key (int const index) const {
   return at_index (index) -> key;
 }
 

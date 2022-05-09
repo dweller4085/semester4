@@ -36,8 +36,8 @@ void test1 () {
   std::cout << tree.key_max() << "\n" << tree.key_min() << "\n" << tree.key_sum() << "\n";
 
   p("another_tree.key(2), index (666):");
-  p(another_tree.key_of(2));
-  p(another_tree.index_of(666));
+  p(another_tree.key(2));
+  p(another_tree.index(666));
 
   p("tree node count:");
   p(tree.node_count());
@@ -84,7 +84,7 @@ void test1 () {
   p("tree at this point:");
   tree.print();
   p("node at index 4 has key:");
-  p(tree.key_of(3));
+  p(tree.key(3));
   p("tree after removing the node 4:");
   tree.remove_node_index(3);
   tree.print();
