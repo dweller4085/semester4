@@ -1,5 +1,7 @@
 #include "search_tree.hpp"
 
+#include <stdexcept>
+
 t_search_tree::t_search_tree () :
   t_binary_tree {}
 {}
@@ -87,20 +89,57 @@ int t_search_tree::key_min () const {
 }
 
 bool t_search_tree::remove_node (t_binary_tree::t_node * const node) {
+
   if (m_root == nullptr or node == nullptr) return false;
 
+  t_node * const parent {parent_of (node)};
+
+  auto shift_to = [this, &parent, &node] (t_node * const what) {
+    if (parent != nullptr) {
+      if (parent->left == node) {
+        parent->left = what;
+      } else {
+        parent->right = what;
+      }
+    } else {
+      m_root = what;
+    }
+  };
+
+
+
   if (node->left == nullptr and node->right == nullptr) {
+    shift_to (nullptr);
+  } else
 
-  } else 
   if (node->left == nullptr and node->right != nullptr) {
+    shift_to (node->right);
+  } else
 
-  } else 
   if (node->left != nullptr and node->right == nullptr) {
+    shift_to (node->left);
+  } else
 
-  } else 
+
+
   if (node->left != nullptr and node->right != nullptr) {
+    t_node * const successor {successor_of (node)};
 
+    if (node->right == successor) {
+      successor->left = node->left;
+    }
+    
+    else {
+      parent_of (successor) -> left = successor -> right;
+      successor->right = node->right;
+      successor->left = node->left;
+    }
+
+    shift_to (successor);
   }
+
+  delete node;
+  return true;
 }
 
 t_binary_tree::t_node * t_search_tree::with_key (int const key) const {
@@ -122,7 +161,10 @@ t_binary_tree::t_node * t_search_tree::with_key (int const key) const {
 
 t_binary_tree::t_node * t_search_tree::parent_of (t_node * const node) const {
   
-  if (m_root == nullptr or node == nullptr) return nullptr;
+  if (m_root == nullptr or node == nullptr) throw std::invalid_argument ( \
+    "t_node * t_search_tree::parent_of (t_node * node):\n" \
+    "[m_root] and [node] cannot be nullptr!" \
+  );
 
   t_node * parent {nullptr};
   t_node * seek {m_root};
@@ -141,5 +183,28 @@ t_binary_tree::t_node * t_search_tree::parent_of (t_node * const node) const {
   }
 
   // Accounting for bogus scenario when [node] doesn't even belong to the [*this] tree
-  return nullptr;
+  throw std::invalid_argument ( \
+    "t_node * t_search_tree::parent_of (t_node * node):\n" \
+    "[node] does not, but really ought to belond to the (*this) tree." \
+  );
+}
+
+t_binary_tree::t_node * t_search_tree::successor_of (t_node * node) const {
+  
+  if (m_root == nullptr) return nullptr;
+
+  if (node->right != nullptr) {
+    t_node * seek {node->right};
+    while (seek->left != nullptr) seek = seek->left;
+    return seek;
+  }
+  
+  else {
+    t_node * parent {parent_of (node)};
+    while (parent != nullptr and parent->right == node) {
+      node = parent->right;
+      parent = parent_of (node);
+    }
+    return parent;
+  }
 }

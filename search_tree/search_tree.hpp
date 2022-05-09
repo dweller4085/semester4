@@ -6,6 +6,7 @@ protected:
   t_node * with_key (int) const override;
 
   t_node * parent_of (t_node *) const;
+  t_node * successor_of (t_node *) const;
 
 public:
   t_search_tree ();
