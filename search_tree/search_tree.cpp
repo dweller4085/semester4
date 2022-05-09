@@ -15,7 +15,7 @@ t_search_tree t_search_tree::operator = (t_search_tree const & other) {
   return *this;
 }
 
-t_search_tree t_search_tree::get_copy (int const index) {
+t_search_tree t_search_tree::get_copy (int const index) const {
   t_search_tree tree;
   tree.copy (at_index (index));
   return tree;
@@ -71,7 +71,8 @@ int t_search_tree::key_max () const {
   if (m_root == nullptr) return -1;
   
   t_node * node {m_root};
-  for (; node->right != nullptr; node = node->right);
+
+  while (node->right != nullptr) node = node->right;
 
   return node->key;
 }
@@ -79,15 +80,66 @@ int t_search_tree::key_min () const {
   if (m_root == nullptr) return -1;
 
   t_node * node {m_root};
-  for (; node->left != nullptr; node = node->left);
+
+  while (node->left != nullptr) node = node->left;
 
   return node->key;
 }
 
 bool t_search_tree::remove_node (t_binary_tree::t_node * const node) {
-  return false;
+  if (m_root == nullptr or node == nullptr) return false;
+
+  if (node->left == nullptr and node->right == nullptr) {
+
+  } else 
+  if (node->left == nullptr and node->right != nullptr) {
+
+  } else 
+  if (node->left != nullptr and node->right == nullptr) {
+
+  } else 
+  if (node->left != nullptr and node->right != nullptr) {
+
+  }
 }
 
-t_binary_tree::t_node * t_search_tree::with_key (int) const {
+t_binary_tree::t_node * t_search_tree::with_key (int const key) const {
+  
+  t_node * seek {m_root};
+  
+  while (seek != nullptr) {
+    if (seek->key == key) {
+      return seek;
+    } else if (seek->key > key) {
+      seek = seek->left;
+    } else {
+      seek = seek->right;
+    }
+  }
+
+  return nullptr;
+}
+
+t_binary_tree::t_node * t_search_tree::parent_of (t_node * const node) const {
+  
+  if (m_root == nullptr or node == nullptr) return nullptr;
+
+  t_node * parent {nullptr};
+  t_node * seek {m_root};
+
+  while (seek != nullptr) {
+    if (seek == node) {
+      return parent;
+    } else {
+      parent = seek;
+      if (seek->key > node->key) {
+        seek = seek->left;
+      } else {
+        seek = seek->right;
+      }
+    }
+  }
+
+  // Accounting for bogus scenario when [node] doesn't even belong to the [*this] tree
   return nullptr;
 }

@@ -5,6 +5,8 @@ protected:
   bool remove_node (t_node *) override;
   t_node * with_key (int) const override;
 
+  t_node * parent_of (t_node *) const;
+
 public:
   t_search_tree ();
   t_search_tree (t_search_tree const &);
@@ -12,7 +14,7 @@ public:
 
   t_search_tree operator = (t_search_tree const &);
 
-  t_search_tree get_copy (int);
+  t_search_tree get_copy (int) const;
 
   t_search_tree & add_node (int);
 
