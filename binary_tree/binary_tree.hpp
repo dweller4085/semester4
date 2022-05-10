@@ -35,9 +35,12 @@ protected:
 
 	std::vector <t_node *> breadth_first (t_node *) const;
 
+	t_binary_tree (t_node * root) : m_root {root} {}
+
 public:
 	t_binary_tree ();
 	t_binary_tree (t_binary_tree const &);
+	t_binary_tree (t_binary_tree && other) { m_root = other.m_root; other.m_root = nullptr; }
 	virtual ~t_binary_tree ();
 	
 	t_binary_tree & operator = (t_binary_tree const &);

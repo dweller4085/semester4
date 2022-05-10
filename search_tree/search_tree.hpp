@@ -7,10 +7,14 @@ protected:
 
   t_node * parent_of (t_node *) const;
   t_node * successor_of (t_node *) const;
+  static t_node * build_rec (int, int, int const *, std::vector <int> const &);
+
+  t_search_tree (t_node * root) : t_binary_tree {root} {}
 
 public:
   t_search_tree ();
   t_search_tree (t_search_tree const &);
+  t_search_tree (t_search_tree && other) : t_binary_tree {other} {}
   ~t_search_tree () override = default;
 
   t_search_tree operator = (t_search_tree const &);
@@ -23,4 +27,6 @@ public:
 
   int key_max () const override;
   int key_min () const override;
+
+  static t_search_tree build_optimal_search_tree (std::vector <int> const &, std::vector <int> const &, std::vector <int> const &);
 };

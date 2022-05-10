@@ -87,6 +87,8 @@ bool t_binary_tree::is_empty () const {
   return (m_root == nullptr);
 }
 bool t_binary_tree::is_balanced () const {
+  if (m_root == nullptr) return false;
+
   for (auto const & node : breadth_first (m_root)) {
     if (std::abs (height (node->left) - height (node->right)) > 1) return false;
   }

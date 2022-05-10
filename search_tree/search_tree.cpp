@@ -208,3 +208,56 @@ t_binary_tree::t_node * t_search_tree::successor_of (t_node * node) const {
     return parent;
   }
 }
+
+t_search_tree t_search_tree::build_optimal_search_tree (std::vector <int> const & d, std::vector <int> const & p, std::vector <int > const & q) {
+  const std::size_t n = d.size() + 1;
+  
+  if (not ((d.size() == p.size()) and (n == q.size())) or n == 1) throw std::invalid_argument ("Inputs must satisfy relation: |d| = |p| = (|q| + 1) > 1");
+
+  int * const cw = new int [n * n];
+  int * const r = new int [n * n] {0};
+
+  {
+    for (std::size_t i = 0; i < n; i++) cw [ i * n + i ] = q [i];
+  }
+
+  {
+    for (std::size_t j = 1; j < n; j++) {
+      for (std::size_t i = 0; i + j < n; i++) {
+        cw [ i * n + (i + j) ] = cw [ i * n + (i + j - 1) ] + p [(i + j - 1)] + q [(i + j)];
+      }
+    }
+  }
+
+  {
+    for (std::size_t j = 1; j < n; j++) {
+      for (std::size_t i = 0; i + j < n; i++) {
+        int min_c = cw [i*n + i] + cw [(i+j)*n + i+1];
+        int min_k = i + 1;
+        
+        for (std::size_t k = i + 1; k <= (i + j); k++) {
+          int c = cw [(k - 1)*n + i] + cw [(i+j)*n + k];
+          if (c < min_c) {
+            min_c = c; min_k = k;
+          }
+        }
+
+        cw [(i + j)*n + i] = cw [i*n + (i + j)] + min_c;
+        r [i*n + (i+j)] = min_k;
+      }
+    }
+  }
+
+  t_node * const root = build_rec (0, n-1, r, d);
+
+  delete [] r;
+  delete [] cw;
+
+  return t_search_tree {t_search_tree {root}};
+}
+
+t_binary_tree::t_node * t_search_tree::build_rec (int i, int j, int const * const r, std::vector <int> const & d) {
+  if (i >= j) return nullptr;
+  int k = r [i * (d.size()+1) + j];
+  return {new t_node {build_rec (i, k-1, r, d), build_rec (k, j, r, d), d[k-1]}};
+}

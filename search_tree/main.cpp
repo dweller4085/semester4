@@ -107,6 +107,16 @@ void test3 () {
 
 }
 
+void test_ost () {
+  std::vector <int> d = {10, 20, 30, 40};
+  std::vector <int> p = {2, 1, 1, 5};
+  std::vector <int> q = {1, 10, 1, 1, 10};
+  
+  t_search_tree ost = t_search_tree::build_optimal_search_tree (d, p, q);
+
+  ost.print();
+}
+
 int main () {
-  test3();
+  
 }
