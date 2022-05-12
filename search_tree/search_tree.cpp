@@ -253,7 +253,7 @@ t_search_tree t_search_tree::build_optimal_search_tree (std::vector <int> const 
   delete [] r;
   delete [] cw;
 
-  return t_search_tree {t_search_tree {root}};
+  return t_search_tree {root};
 }
 
 t_binary_tree::t_node * t_search_tree::build_rec (int i, int j, int const * const r, std::vector <int> const & d) {

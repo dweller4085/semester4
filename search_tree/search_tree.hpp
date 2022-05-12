@@ -21,7 +21,7 @@ public:
 
   t_search_tree get_copy (int) const;
 
-  t_search_tree & add_node (int);
+  t_search_tree& add_node (int) override;
 
   int level (int) const override;
 

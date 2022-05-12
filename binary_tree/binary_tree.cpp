@@ -351,3 +351,16 @@ bool t_binary_tree::remove_node (t_node * const node) {
 
   return false;
 }
+
+bool t_binary_tree::is_search_tree () const {
+  for (auto const & node : breadth_first (m_root)) {
+    if (node->left != nullptr) {
+      if (node->key <= node->left->key) return false;
+    }
+    if (node->left != nullptr) {
+      if (node->key > node->right->key) return false;
+    }
+  }
+
+  return true;
+}

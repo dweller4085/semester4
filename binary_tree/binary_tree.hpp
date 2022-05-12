@@ -50,7 +50,7 @@ public:
 	t_binary_tree & clear ();
 	t_binary_tree & clear_subtrees (int);
 	
-	t_binary_tree & add_node (int);
+	virtual t_binary_tree& add_node (int);
 	bool remove_node_key (int);
 	bool remove_node_index (int);
 	
@@ -73,4 +73,6 @@ public:
 	void print () const;
 	void print_level (int) const;
 	void print_leaves () const;
+
+	bool is_search_tree () const;
 };

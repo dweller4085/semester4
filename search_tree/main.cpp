@@ -32,8 +32,7 @@ void test1 () {
   stcopy.print();
 }
 
-void test2 () {
-  t_search_tree st;
+void test2 (t_binary_tree & st) {
   st.add_node(7);
   for (int i = 0; i < 15; i+=2) {
     st.add_node(i);
@@ -41,6 +40,9 @@ void test2 () {
     st.print();
     std::cout << "\n";
   }
+
+
+  std::cout << "is this a search tree? " << st.is_search_tree() << "\n";
 
   std::cout << "---- removing now ----\n";
 
@@ -118,5 +120,8 @@ void test_ost () {
 }
 
 int main () {
-  
+  t_binary_tree bt;
+  t_search_tree st;
+  test2(st);
+  test2(bt);
 }
