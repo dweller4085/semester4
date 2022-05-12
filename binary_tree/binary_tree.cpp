@@ -357,7 +357,7 @@ bool t_binary_tree::is_search_tree () const {
     if (node->left != nullptr) {
       if (node->key <= node->left->key) return false;
     }
-    if (node->left != nullptr) {
+    if (node->right != nullptr) {
       if (node->key > node->right->key) return false;
     }
   }
