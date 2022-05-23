@@ -104,6 +104,8 @@ void t_huffman::build (std::istream & file) {
 
   clear ();
 
+  auto g = file.tellg();
+
   std::deque <t_huffnode *> nodes;
 
   char ch;
@@ -117,37 +119,16 @@ void t_huffman::build (std::istream & file) {
       }
     }
     if (not found) {
-      nodes.push_back (new t_huffnode {ch});
+      nodes.push_back (new t_huffnode {static_cast <unsigned char> (ch)});
     }
   }
 
-  if (nodes.size() == 0) throw std::invalid_argument ("fuck you too");
-
-  file.clear();file.clear();file.clear();file.clear();file.clear();file.clear();file.sync();
-  file.seekg (0, std::ios_base::beg);
-  file.seekg (0, std::ios_base::beg);
-  file.seekg (0, std::ios_base::beg);
-  file.seekg (0, std::ios_base::beg);
-  file.seekg (0, std::ios_base::beg);
-  file.seekg (0);
-  file.clear();
-  file.sync();
+  if (nodes.size() == 0) throw std::invalid_argument ("kindly and politely asking you not to pass me empty files");
 
   std::sort (nodes.begin(), nodes.end(), [] (t_huffnode * a, t_huffnode * b) { return a->freq < b->freq; });
-	
-	/*
-  int i = 0;
-  for (const auto & node : nodes) {
-    std::cout << i << ": " << node->chars << ", freq: " << node->freq << "\n";
-    i++;
-  }
-  */
-	
 
   while (nodes.size () > 1) {
     t_huffnode * sum = new t_huffnode {*nodes[0] + *nodes[1]};
-    //std::cout << sum->chars << "\n";
-    //std::cout << nodes.size() << "\n";
     nodes.pop_front();
     nodes.pop_front();
     nodes.push_front (sum);
@@ -155,6 +136,10 @@ void t_huffman::build (std::istream & file) {
   }
 
   m_root = nodes.front();
+
+  file.clear();
+  file.seekg(g);
+  file.sync();
 }
 
 double t_huffman::encode (std::istream & orfile, std::ostream & enfile) {
@@ -164,14 +149,6 @@ double t_huffman::encode (std::istream & orfile, std::ostream & enfile) {
 
   std::size_t or_char_length = 0;
   std::size_t en_bit_length = 0;
-  
-  /* 
-  std::cout << orfile.good() << "\n";
-  std::cout << orfile.eof() << "\n";
-  std::cout << orfile.bad() << "\n";
-  std::cout << orfile.fail() << "\n";
-  std::cout << orfile.tellg() << "\n";
-  */
 
   char ch;
   while (orfile.get(ch)) {
@@ -180,29 +157,19 @@ double t_huffman::encode (std::istream & orfile, std::ostream & enfile) {
       en_bit_length++;
       if (walk->left->chars[ch]) {
         walk = walk->left;
-        //std::cout << ch << ": 0" << "\n";
         enfile << '0';
       } else {
         walk = walk->right;
-        //std::cout << ch << ": 1" << "\n";
         enfile << '1';
       }
     }
     or_char_length++;
   }
 
-  enfile.flush();
-
-  enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.flush();
-  enfile.seekp (0, std::ios_base::beg);
-  enfile.seekp (0, std::ios_base::beg);
-  enfile.seekp (0, std::ios_base::beg);
-  enfile.seekp (0, std::ios_base::beg);
-  enfile.seekp (0, std::ios_base::beg); // i beg
-  enfile.seekp (0);
-  enfile.clear();
-  enfile.flush();
-  enfile.seekp(0);
+  if (m_root->is_leaf()) {
+    for (int i = 0; i < or_char_length; i++) enfile << ".";
+    en_bit_length = 1;
+  }
 
   return double (en_bit_length) / double (or_char_length * 8);
 }
@@ -211,35 +178,11 @@ bool t_huffman::decode (std::istream & enfile, std::ostream & defile) {
   if (not (enfile.good() and defile.good())) throw std::invalid_argument ("blargh what an invalid arg");
   if (m_root == nullptr) throw std::logic_error ("blargh i don't even have the tree");
 
-  enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.clear();enfile.sync();
-  enfile.seekg (0, std::ios_base::beg);
-  enfile.seekg (0, std::ios_base::beg);
-  enfile.seekg (0, std::ios_base::beg);
-  enfile.seekg (0, std::ios_base::beg);
-  enfile.seekg (0, std::ios_base::beg); // i beg
-  enfile.seekg (0);
-  enfile.clear();
-  enfile.sync();
-  enfile.seekg(0);
-  
-  defile.flush();
-
-  defile.clear();defile.clear();defile.clear();defile.clear();defile.clear();defile.clear();defile.flush();
-  defile.seekp (0, std::ios_base::beg);
-  defile.seekp (0, std::ios_base::beg);
-  defile.seekp (0, std::ios_base::beg);
-  defile.seekp (0, std::ios_base::beg);
-  defile.seekp (0, std::ios_base::beg); // i beg
-  defile.seekp (0);
-  defile.clear();
-  defile.flush();
-  defile.seekp(0);
-
   char ch;
   auto walk = m_root;
 
   if (walk->is_leaf()) {
-    defile << walk->chars;
+    while (enfile.get(ch)) defile << walk->chars;
     return true;
   }
 
@@ -249,27 +192,30 @@ bool t_huffman::decode (std::istream & enfile, std::ostream & defile) {
     } else if (ch == '1') {
       walk = walk->right;
     } else {
-      return false;//throw std::invalid_argument ("beep bop can only understand 1's and 0's");
+      return false;
     }
 
     if (walk->is_leaf()) {
       defile << walk->chars;
       walk = m_root;
     }
-
   }
 
   return true;
 }
 
 int main () {
-  std::fstream orfile {"orfile.txt"};
-  std::fstream enfile {"enfile.txt"};
-  std::fstream defile {"defile.txt"};
+  //todo reopemn file lasas 
+  std::fstream orfile {"orfile.txt", std::ios_base::in};
+  std::fstream enfile {"enfile.txt", std::ios_base::out | std::ios_base::trunc};
+  std::fstream defile {"defile.txt", std::ios_base::out | std::ios_base::trunc};
   t_huffman huffman;
 
   //huffman.build (orfile);
   std::cout << huffman.encode (orfile, enfile) << "\n";
+
+  enfile.close();
+  enfile.open ("enfile.txt", std::ios_base::in);
   huffman.decode(enfile, defile);
 
 }
