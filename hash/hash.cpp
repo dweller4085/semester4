@@ -17,6 +17,13 @@ struct t_hash_v1 : public i_hash_function {
 	}
 } v1;
 
+struct t_hash_v2 : public i_hash_function {
+	unsigned operator () (unsigned K, unsigned N, unsigned i) override {
+		if (i == 0) return K % N;
+		return unsigned (operator () (K, N, i - 1) * N * 0.618034 ) % N;
+	}
+} v2;
+
 class t_hashtable {
 private:
   struct t_kvnode {
@@ -29,6 +36,7 @@ public:
   void add (t_keyval &);
   void remove (t_keyval &);
   bool check (t_keyval &);
+  void change_hash_function (i_hash_function &);
 };
 
 int main () {}
