@@ -35,7 +35,7 @@ private:
   i_hash_function * hash_function;
   bool * occupied;
 public:
-  t_hashtable () : hash_function {&v1}, size {4}, table {new t_kvnode [4] {{{0, ""}, nullptr}}}, occupied {new bool [4] {false}} {}
+  t_hashtable (unsigned _size) : hash_function {&v1}, size {_size}, table {new t_kvnode [_size] {{{0, ""}, nullptr}}}, occupied {new bool [_size] {false}} {}
   t_hashtable (t_hashtable const &);
   t_hashtable & operator = (t_hashtable const &);
   ~t_hashtable ();
@@ -78,7 +78,26 @@ void t_hashtable::remove (t_keyval const & kv) {
   if (not occupied [index]) {
     return;
   } else {
-    //?????????????
+    if (table[index].kv.key == kv.key) {
+      if (table[index].next == nullptr) {
+        occupied[index] = false;
+      } else {
+        table[index] = *table[index].next;
+      }
+    } else {
+      auto seek = table[index].next;
+      auto prev = &table[index];
+      while (seek != nullptr and seek->kv.key != kv.key) {
+        prev = seek;
+        seek = seek->next;
+      }
+      if (seek == nullptr) {
+        return;
+      } else {
+        prev->next = seek->next;
+        delete seek;
+      }
+    }
   }
 }
 
@@ -181,11 +200,14 @@ void t_hashtable::change_hash_function (i_hash_function & hashf) {
 }
 
 int main () {
-  t_hashtable ht;
+  t_hashtable ht {4};
   ht.add ({666, "hellooo"});
-  ht.add ({666, "ayayayeyeapppaoaooaoa"});
-  ht.add ({666, "AAAAAAAAA"});
+  ht.add ({734, "ayayayeyeapppaoaooaoa"});
+  ht.add ({404, "AAAAAAAAA"});
   ht.add ({12, "testers"});
   ht.change_hash_function (v2);
   ht.check ({666, "whatever wont even look"});
+  t_hashtable nht = ht;
+  ht.remove ({12, "testers"});
+  nht = ht;
 }
