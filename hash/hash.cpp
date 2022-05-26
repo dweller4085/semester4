@@ -116,7 +116,7 @@ bool t_hashtable::check (t_keyval const & kv) const {
     return false;
   } else {
     auto seek = &table [index];
-    while (seek->kv.key != kv.key and seek != nullptr) seek = seek->next;
+    while (seek != nullptr and seek->kv.key != kv.key) seek = seek->next;
     if (seek == nullptr)
       return false;
     else
