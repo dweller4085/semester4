@@ -126,9 +126,12 @@ bool t_hashtable::check (t_keyval const & kv) const {
 
 t_hashtable::t_hashtable (t_hashtable const & other) : 
   size {other.size},
-  table {new t_kvnode [other.size] {{{0, ""}, nullptr}}},
-  occupied {new bool [other.size] {false}}
+  table {new t_kvnode [other.size] ()},
+  occupied {new bool [other.size]}
 {
+  for (unsigned i = 0; i < size; i++) {
+    occupied[i] = false;
+  }
   for (unsigned i = 0; i < size; i++) {
     if (other.occupied[i]) {
       table [i].kv = other.table[i].kv;
