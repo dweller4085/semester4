@@ -41,8 +41,10 @@ public:
     hash_function {&v1},
     size {_size},
     table {new t_kvnode [_size] ()},
-    occupied {new bool [_size] ()}
-  {}
+    occupied {new bool [_size]}
+  {
+    for (unsigned i = 0; i < _size; i++) occupied[i] = false;
+  }
   t_hashtable (t_hashtable const &);
   t_hashtable & operator = (t_hashtable const &);
   ~t_hashtable ();
