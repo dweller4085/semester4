@@ -188,7 +188,7 @@ void t_hashtable::change_hash_function (i_hash_function & hashf) {
   t_kvnode * newtable = new t_kvnode [size] ();
   bool * newoccupied = new bool [size];
   for (unsigned i = 0; i < size; i++) {
-    occupied[i] = false;
+    newoccupied[i] = false;
   }
   hash_function = &hashf;
 
