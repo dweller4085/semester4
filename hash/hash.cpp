@@ -53,7 +53,7 @@ public:
   bool check (t_keyval const &) const;
   void change_hash_function (i_hash_function &);
   void print (std::string str = "") const {
-    std::cout << "------" << str << "--------" << "\n\n";
+    std::cout << "------  " << str << "  --------" << "\n\n";
     for (unsigned i = 0; i < size; i++) {
       std::cout << i << ": ";
       if (occupied[i]) {
@@ -150,7 +150,7 @@ t_hashtable::t_hashtable (t_hashtable const & other) :
   hash_function {other.hash_function}
 {
   for (unsigned i = 0; i < size; i++) {
-    occupied[i] = false;
+    occupied[i] = other.occupied[i];
   }
 
   for (unsigned i = 0; i < size; i++) {
@@ -298,4 +298,34 @@ int main () {
 
   ht.print("removed {0 .. 7} from ht, ht:");
 
+  std::cout << "--------------BIG------------------\n";
+  t_hashtable BIG {256};
+  BIG.print("default-init BIG:");
+
+  for (unsigned i = 0; i < 256; i++) {
+    BIG.add ({i, ""});
+  }
+  BIG.print("BIG v1, after adding {0..255}:");
+
+  BIG.change_hash_function(v2);
+  BIG.print("BIG had hf v1, changed to v2, BIG:");
+
+  for (unsigned i = 0; i < 256; i++) {
+    BIG.add ({i+256, ""});
+  }
+  BIG.print("BIG v2, after adding {256..511}:");
+
+  BIG.change_hash_function(v1);
+  BIG.print("BIG had hf v2, changed to v1, BIG:");
+
+  for (unsigned i = 0; i < 256; i++) {
+    BIG.remove ({i, ""});
+  }
+  BIG.print("BIG v1, after removing {0..255}:");
+
+  
+  t_hashtable NEWBIG = BIG;
+
+  NEWBIG.print("NEWBIG copyconstr from BIG:");
+  
 }
