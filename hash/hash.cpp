@@ -182,8 +182,11 @@ t_hashtable & t_hashtable::operator = (t_hashtable const & other) {
 }
 
 void t_hashtable::change_hash_function (i_hash_function & hashf) {
-  t_kvnode * newtable = new t_kvnode [size] {{{0, ""}, nullptr}};
-  bool * newoccupied = new bool [size] {false};
+  t_kvnode * newtable = new t_kvnode [size] ();
+  bool * newoccupied = new bool [size];
+  for (unsigned i = 0; i < size; i++) {
+    occupied[i] = false;
+  }
   hash_function = &hashf;
 
   for (unsigned i = 0; i < size; i++) {
