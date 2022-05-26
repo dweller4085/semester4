@@ -52,6 +52,25 @@ public:
   void remove (t_keyval const &);
   bool check (t_keyval const &) const;
   void change_hash_function (i_hash_function &);
+  void print (std::string str = "") const {
+    std::cout << "------" << str << "--------" << "\n\n";
+    for (unsigned i = 0; i < size; i++) {
+      std::cout << i << ": ";
+      if (occupied[i]) {
+        auto seek = & table[i];
+        while (seek != nullptr) {
+          std::cout << seek->kv.key;
+          seek = seek->next;
+          if (seek) {
+            std::cout << ", ";
+          } else {
+            std::cout << ".";
+          }
+        }
+      }
+      std::cout << "\n";
+    }
+  }
 };
 
 void t_hashtable::add (t_keyval const & kv) {
@@ -127,11 +146,13 @@ bool t_hashtable::check (t_keyval const & kv) const {
 t_hashtable::t_hashtable (t_hashtable const & other) : 
   size {other.size},
   table {new t_kvnode [other.size] ()},
-  occupied {new bool [other.size]}
+  occupied {new bool [other.size]},
+  hash_function {other.hash_function}
 {
   for (unsigned i = 0; i < size; i++) {
     occupied[i] = false;
   }
+
   for (unsigned i = 0; i < size; i++) {
     if (other.occupied[i]) {
       table [i].kv = other.table[i].kv;
@@ -162,11 +183,13 @@ t_hashtable & t_hashtable::operator = (t_hashtable const & other) {
   delete [] table;
   delete [] occupied;
 
+
+  hash_function = other.hash_function;
   size = other.size;
   table = new t_kvnode [other.size] ();
   occupied = new bool [other.size];
   for (unsigned i = 0; i < size; i++) {
-    occupied[i] = false;
+    occupied[i] = other.occupied[i];
   }
 
   for (unsigned i = 0; i < size; i++) {
@@ -225,9 +248,54 @@ int main () {
   ht.add ({734, "ayayayeyeapppaoaooaoa"});
   ht.add ({404, "AAAAAAAAA"});
   ht.add ({12, "testers"});
+  ht.print("constructed ht {666, 734, 404, 12}, ht:");
+
+
   ht.change_hash_function (v2);
-  ht.check ({666, "whatever wont even look"});
-  t_hashtable nht = ht;
+  ht.print("changed hf in ht, ht:");
+
+
+  std::cout << "\n is 666 in ht: " << ht.check ({666, "whatever wont even look"}) << "\n";
+
   ht.remove ({12, "testers"});
+  ht.print("removed 12 from ht, ht:");
+
+  t_hashtable nht {4};
   nht = ht;
+  nht.print("copied ht to nht, nht:");
+
+
+  nht.change_hash_function (v1);
+  nht.change_hash_function (v2);
+  ht.change_hash_function (v1);
+
+  ht.print("ht had hf v2, changed to v1, ht:");
+  nht.print("nht had hf v2, changed to v1 and back to v2, nht:");
+
+  std::cout << "-----------------------------------\n\n"; 
+
+
+  for (unsigned i = 0; i < 4; i++) {
+    ht.add({i, ""});
+  }
+
+  ht.print("addded {0, 1, 2, 3} to ht, ht:");
+
+  ht.change_hash_function (v2);
+
+  ht.print("ht had hf v1, changed to v2, ht:");
+
+  for (unsigned i = 0; i < 4; i++) {
+    ht.add({i+4, ""});
+  }
+
+  ht.print("added {4, 5, 6, 7} to ht, ht:");
+
+  for (unsigned i = 0; i < 4; i++) {
+    ht.remove({i, ""});
+    ht.remove({i+4, ""});
+  }
+
+  ht.print("removed {0 .. 7} from ht, ht:");
+
 }
