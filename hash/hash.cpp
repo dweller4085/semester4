@@ -30,12 +30,19 @@ private:
   struct t_kvnode {
     t_keyval kv;
     t_kvnode * next;
+    t_kvnode () : kv {0, ""}, next {nullptr} {}
+    t_kvnode (t_keyval const & _kv, t_kvnode * _next) : kv {_kv}, next {_next} {}
   } * table;
   unsigned size;
   i_hash_function * hash_function;
   bool * occupied;
 public:
-  t_hashtable (unsigned _size) : hash_function {&v1}, size {_size}, table {new t_kvnode [_size] {{{0, ""}, nullptr}}}, occupied {new bool [_size] {false}} {}
+  t_hashtable (unsigned _size) :
+    hash_function {&v1},
+    size {_size},
+    table {new t_kvnode [_size] ()},
+    occupied {new bool [_size] ()}
+  {}
   t_hashtable (t_hashtable const &);
   t_hashtable & operator = (t_hashtable const &);
   ~t_hashtable ();
