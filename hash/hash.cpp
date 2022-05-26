@@ -134,6 +134,8 @@ t_hashtable::t_hashtable (t_hashtable const & other) :
 }
 
 t_hashtable & t_hashtable::operator = (t_hashtable const & other) {
+  if (this == &other) return *this;
+
   for (unsigned i = 0; i < size; i++) {
     if (occupied [i]) {
       auto seek = table [i].next;
